@@ -4,8 +4,7 @@
 [![GitHub top language](https://img.shields.io/github/languages/top/xybor-x/xypriv?color=lightblue)](https://go.dev/)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/xybor-x/xypriv)](https://go.dev/blog/go1.18)
 [![GitHub release (release name instead of tag name)](https://img.shields.io/github/v/release/xybor-x/xypriv?include_prereleases)](https://github.com/xybor-x/xypriv/releases/latest)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e9146e2ccfd745a48a42fc723918d4cb)](https://www.codacy.com/gh/xybor-x/xypriv/dashboard?utm_source=github.com&utm_medium=referral&utm_content=xybor-x/xypriv&utm_campaign=Badge_Grade)
-[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/e9146e2ccfd745a48a42fc723918d4cb)](https://www.codacy.com/gh/xybor-x/xypriv/dashboard?utm_source=github.com&utm_medium=referral&utm_content=xybor-x/xypriv&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8060ee5daef141c6811223384c8da55f)](https://www.codacy.com/gh/xybor-x/xypriv/dashboard?utm_source=github.com&utm_medium=referral&utm_content=xybor-x/xypriv&utm_campaign=Badge_Grade)
 [![Go Report](https://goreportcard.com/badge/github.com/xybor-x/xypriv)](https://goreportcard.com/report/github.com/xybor-x/xypriv)
 
 # Introduction

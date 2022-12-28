@@ -22,6 +22,7 @@
 
 package xypriv
 
+// Recommended privileges.
 const (
 	BadRelation Privilege = iota
 	Anyone
@@ -36,6 +37,7 @@ const (
 	Self
 )
 
+// Recommended access levels.
 const (
 	Public AccessLevel = iota + 1
 	LowPrivate
