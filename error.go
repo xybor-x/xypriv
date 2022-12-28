@@ -24,6 +24,7 @@ package xypriv
 
 import "github.com/xybor-x/xyerror"
 
+// Xypriv errors.
 var (
 	XyprivError         = xyerror.NewException("XyprivError")
 	ConfigurationError  = XyprivError.NewException("ConfigurationError")
