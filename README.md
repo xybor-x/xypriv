@@ -45,12 +45,12 @@ The subject can read the resource if `P >= AC`.
 
 # Get started
 
-_After you read the following guide, please visit [tutorials](./tutotials/)._
+_After you read the following guide, please visit [tutorials](./tutorials/)._
 
 ## Define entities
 
 First, you need to define all subjects, resources, contexts, and relations in
-each context. For example, see [tutorials](./tutotials/).
+each context. For example, see [tutorials](./tutorials/).
 
 Then, give prefered names to the privileges and access levels in each context. Below items are recommended privileges and access levels for the normal context.
 
@@ -74,7 +74,7 @@ Then, give prefered names to the privileges and access levels in each context. B
 
 ## Implement Subject interface
 
-_After you read the all sections, please visit [tutorials](./tutotials/)._
+_After you read the all sections, please visit [tutorials](./tutorials/)._
 
 `Subject` interface requires only one method called `Relation`.
 
@@ -126,7 +126,7 @@ func (u User) Relation(s Subject, ctx any) xypriv.Privilege {
 
 ## Implement Resource interfaces
 
-_After you read the all sections, please visit [tutorials](./tutotials/)._
+_After you read the all sections, please visit [tutorials](./tutorials/)._
 
 For a resource, you need to define `Context` and `Owner` methods which returns
 the context and owner of resource, respectively.
@@ -183,7 +183,7 @@ func (a Avatar) Permission(action ...string) xypriv.AccessLevel {
 
 ## Use Check-Perform-On operator
 
-_After you read the all sections, please visit [tutorials](./tutotials/)._
+_After you read the all sections, please visit [tutorials](./tutorials/)._
 
 ```golang
 var userA = User{name: "A"}
