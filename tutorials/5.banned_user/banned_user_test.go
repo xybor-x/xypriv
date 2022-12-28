@@ -28,40 +28,44 @@ import (
 	"github.com/xybor-x/xypriv"
 )
 
+func init() {
+	xypriv.AddRelation(nil, "banned", xypriv.BadRelation)
+}
+
 // User implements Subject interface.
 type User struct {
 	id         string
-	bannedUser []*User
+	bannedUser []User
 }
 
 // Relation returns the privilege of user over another subject.
-func (u *User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
+func (u User) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	switch t := subject.(type) {
-	case *User:
+	case User:
 		// Check if subject is the current user or not.
 		if u.id == t.id {
-			return xypriv.Self
+			return "self"
 		}
 	}
 
 	switch ctx {
 	case nil:
 		switch t := subject.(type) {
-		case *User:
+		case User:
 			// Check if the current user is in banned list of subject.
 			for i := range t.bannedUser {
 				if t.bannedUser[i].id == u.id {
-					return xypriv.BadRelation
+					return "banned"
 				}
 			}
 		}
 	}
-	return xypriv.Anyone
+	return "anyone"
 }
 
-// Avatar implements Resource interface.
+// Avatar implements StaticResource interface.
 type Avatar struct {
-	user *User
+	user User
 }
 
 // Context returns the context of Avatar.
@@ -90,9 +94,9 @@ func (a Avatar) Permission(action ...string) xypriv.AccessLevel {
 }
 
 func Example() {
-	var userA = &User{id: "A"}
-	var userB = &User{id: "B"}
-	var userC = &User{id: "C"}
+	var userA = User{id: "A"}
+	var userB = User{id: "B"}
+	var userC = User{id: "C"}
 
 	userA.bannedUser = append(userA.bannedUser, userB)
 	var avtA = Avatar{user: userA}

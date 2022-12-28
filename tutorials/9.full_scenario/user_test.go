@@ -30,8 +30,8 @@ import (
 type User struct {
 	id         string
 	role       string
-	bannedUser []*User
-	friends    []*User
+	bannedUser []User
+	friends    []User
 }
 
 // IsFriend check if another user is a friend of the current user.
@@ -55,20 +55,20 @@ func (u User) IsBanned(another User) bool {
 }
 
 // Relation returns the privilege of user over another subject.
-func (u *User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
+func (u User) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	// Non-context privilege will be served first.
-	if usr, ok := subject.(*User); ok {
+	if usr, ok := subject.(User); ok {
 		if usr.id == u.id {
-			return xypriv.Self
+			return "self"
 		}
 	}
 
 	// Role-based is also a non-context privilege.
 	switch u.role {
 	case "admin":
-		return xypriv.Admin
+		return "admin"
 	case "mod":
-		return xypriv.Moderator
+		return "moderator"
 	}
 
 	switch ctx.(type) {
@@ -80,24 +80,24 @@ func (u *User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
 	// 5. u is banned by t (Group)
 	case nil:
 		switch t := subject.(type) {
-		case *User:
-			if t.IsFriend(*u) {
-				return xypriv.LowFamiliar
+		case User:
+			if t.IsFriend(u) {
+				return "friend"
 			}
-			if t.IsBanned(*u) {
-				return xypriv.BadRelation
+			if t.IsBanned(u) {
+				return "banned"
 			}
-		case *Group:
+		case Group:
 			if u.id == t.admin.id {
-				return xypriv.LocalAdmin
+				return "groupAdmin"
 			}
 
-			if t.IsMember(*u) {
-				return xypriv.LowFamiliar
+			if t.IsMember(u) {
+				return "groupMember"
 			}
 
-			if t.IsBanned(*u) {
-				return xypriv.BadRelation
+			if t.IsBanned(u) {
+				return "groupBanned"
 			}
 		}
 	// In the group context:
@@ -109,32 +109,32 @@ func (u *User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
 	//    a. u is group admin of t.
 	//    b. u is same group with t.
 	//    c. u is banned by t.
-	case *Group:
-		var group = ctx.(*Group)
-		if group.IsBanned(*u) {
-			return xypriv.BadRelation
+	case Group:
+		var group = ctx.(Group)
+		if group.IsBanned(u) {
+			return "banned"
 		}
-		if !group.IsMember(*u) {
-			return xypriv.Anyone
+		if !group.IsMember(u) {
+			return "anyone"
 		}
 
 		switch t := subject.(type) {
-		case *User:
-			if group.IsBanned(*t) {
-				return xypriv.BadRelation
+		case User:
+			if group.IsBanned(t) {
+				return "banned"
 			}
-			if !group.IsMember(*t) {
-				return xypriv.Anyone
+			if !group.IsMember(t) {
+				return "anyone"
 			}
 			if group.admin.id == u.id {
-				return xypriv.LocalAdmin
+				return "groupAdmin"
 			}
-			if t.IsBanned(*u) {
-				return xypriv.BadRelation
+			if t.IsBanned(u) {
+				return "banned"
 			}
-			return xypriv.LowFamiliar
+			return "sameGroup"
 		}
 	}
 
-	return xypriv.Anyone
+	return "anyone"
 }

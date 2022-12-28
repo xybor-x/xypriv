@@ -26,24 +26,24 @@ import (
 	"github.com/xybor-x/xypriv"
 )
 
-// GroupPost implements Resource interface.
-type GroupPost struct {
-	user  *User
-	group *Group
+// GroupAvatar implements StaticResource interface.
+type GroupAvatar struct {
+	group Group
 }
 
-// Context returns the context of GroupPost.
-func (gp GroupPost) Context() any {
+// Context returns the context of GroupAvatar.
+func (gp GroupAvatar) Context() any {
+	// Group avatar itself belongs to Group, so it should not in Group context.
+	return nil
+}
+
+// Owner returns the owner of GroupAvatar.
+func (gp GroupAvatar) Owner() xypriv.Subject {
 	return gp.group
 }
 
-// Owner returns the owner of GroupPost.
-func (gp GroupPost) Owner() xypriv.Subject {
-	return gp.user
-}
-
-// Permission returns the permission set of GroupPost.
-func (gp GroupPost) Permission(action ...string) xypriv.AccessLevel {
+// Permission returns the permission set of GroupAvatar.
+func (gp GroupAvatar) Permission(action ...string) xypriv.AccessLevel {
 	// Return NotSupport if action is invalid.
 	if len(action) != 1 {
 		return xypriv.NotSupport
@@ -51,14 +51,14 @@ func (gp GroupPost) Permission(action ...string) xypriv.AccessLevel {
 
 	switch action[0] {
 	case "update":
-		// Only self privilege can update the post.
-		return xypriv.TopSecret
+		// Only admin or group admin privilege can update the post.
+		return xypriv.LowSecret
 	case "delete":
-		// Admin, group admin, or self privilege can delete the post.
+		// Only admin or group admin privilege can delete the post.
 		return xypriv.LowSecret
 	case "read":
-		// Members in group can read the post.
-		return xypriv.LowPrivate
+		// Anyone can read the group avatar.
+		return xypriv.Public
 	}
 	return xypriv.NotSupport
 }

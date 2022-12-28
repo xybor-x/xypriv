@@ -23,10 +23,10 @@
 
 -   User:
     -   friend (low familiar): with another user.
-    -   banned user (bad relation): with another user.
+    -   banned (bad relation): with another user.
     -   group admin (local admin): with group.
-    -   member (low familiar): with group.
-    -   banned member (bad relation): with group.
+    -   group member (low familiar): with group.
+    -   group banned (bad relation): with group.
 
 ## Group context
 

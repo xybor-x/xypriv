@@ -22,6 +22,10 @@
 
 package xypriv
 
+import (
+	"strings"
+)
+
 // Recommended privileges.
 const (
 	BadRelation Privilege = iota
@@ -51,3 +55,53 @@ const (
 	TopSecret
 	NotSupport
 )
+
+// defaultRelation stored all relations for all context.
+var defaultRelation = map[Relation]Privilege{
+	"badrelation":    BadRelation,
+	"anyone":         Anyone,
+	"lowfamiliar":    LowFamiliar,
+	"mediumfamiliar": MediumFamiliar,
+	"highfamiliar":   HighFamiliar,
+	"topfamiliar":    TopFamiliar,
+	"localmoderator": LocalModerator,
+	"moderator":      Moderator,
+	"localadmin":     LocalAdmin,
+	"admin":          Admin,
+	"self":           Self,
+}
+
+// relationMap stores all contexts and their relations.
+var relationMap = map[string]map[Relation]Privilege{}
+
+// AddRelation adds a relation of context to privilege manager. The context
+// should be a string, struct, or pointer of struct.
+func AddRelation(context any, relation Relation, privilege Privilege) {
+	var cname = getName(context)
+
+	if _, ok := relationMap[cname]; !ok {
+		relationMap[cname] = make(map[Relation]Privilege)
+	}
+
+	relation = Relation(strings.ToLower(string(relation)))
+	relationMap[cname][relation] = privilege
+}
+
+// getPrivilege returns the privilege corresponding to context and relation.
+func getPrivilege(context any, relation Relation) Privilege {
+	var cname = getName(context)
+
+	if cmap, ok := relationMap[cname]; ok || cname == "" {
+		relation = Relation(strings.ToLower(string(relation)))
+		if priv, ok := cmap[relation]; ok {
+			return priv
+		}
+
+		if priv, ok := defaultRelation[relation]; ok {
+			return priv
+		}
+
+		panic(XyprivError.Newf("unknown relation %s in context %s", relation, cname))
+	}
+	panic(XyprivError.Newf("unknown context %s", cname))
+}

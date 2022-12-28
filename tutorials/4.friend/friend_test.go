@@ -28,40 +28,44 @@ import (
 	"github.com/xybor-x/xypriv"
 )
 
+func init() {
+	xypriv.AddRelation(nil, "friend", xypriv.MediumFamiliar)
+}
+
 // User implements Subject interface.
 type User struct {
 	id      string
-	friends []*User
+	friends []User
 }
 
 // Relation returns the privilege of user over another subject.
-func (u *User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
+func (u User) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	switch t := subject.(type) {
-	case *User:
+	case User:
 		// Check if subject is the current user or not.
 		if u.id == t.id {
-			return xypriv.Self
+			return "self"
 		}
 	}
 
 	switch ctx {
 	case nil:
 		switch t := subject.(type) {
-		case *User:
+		case User:
 			// Check if the current user is a friend of subject.
 			for i := range t.friends {
 				if t.friends[i].id == u.id {
-					return xypriv.MediumFamiliar
+					return "friend"
 				}
 			}
 		}
 	}
-	return xypriv.Anyone
+	return "anyone"
 }
 
-// Avatar implements Resource interface.
+// Avatar implements StaticResource interface.
 type Avatar struct {
-	user *User
+	user User
 }
 
 // Context returns the context of Avatar.
@@ -97,9 +101,9 @@ func (a Avatar) Permission(action ...string) xypriv.AccessLevel {
 }
 
 func Example() {
-	var userA = &User{id: "A"}
-	var userB = &User{id: "B"}
-	var userC = &User{id: "C"}
+	var userA = User{id: "A"}
+	var userB = User{id: "B"}
+	var userC = User{id: "C"}
 
 	userA.friends = append(userA.friends, userB)
 	var avtA = Avatar{user: userA}
