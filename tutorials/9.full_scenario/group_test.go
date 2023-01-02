@@ -28,15 +28,15 @@ import (
 
 // Group implements Subject interface
 type Group struct {
-	members    []*User
-	admin      *User
-	bannedUser []*User
+	members    []User
+	admin      User
+	bannedUser []User
 }
 
 // Relation returns the privilege of group over another subject.
-func (g *Group) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
+func (g Group) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	// A group should not have any privilege over other Subjects.
-	return xypriv.Anyone
+	return "anyone"
 }
 
 // IsMember checks if a user is a member of the group.

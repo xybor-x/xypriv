@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package enhanced_resource_test
+package dynamic_resource_test
 
 import (
 	"fmt"
@@ -34,19 +34,15 @@ type User struct {
 }
 
 // Relation returns the privilege of user over another subject.
-func (u User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
-	if ctx != nil {
-		return xypriv.Anyone
-	}
-
+func (u User) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	// Check if subject is the current user or not.
 	if u.id == subject.(User).id {
-		return xypriv.Self
+		return "self"
 	}
-	return xypriv.Anyone
+	return "anyone"
 }
 
-// Avatar implements Resource interface.
+// Avatar implements DynamicResource interface.
 type Avatar struct {
 	user       User
 	bannedUser []User

@@ -26,9 +26,9 @@ import (
 	"github.com/xybor-x/xypriv"
 )
 
-// Avatar implements Resource interface.
+// Avatar implements StaticResource interface.
 type Avatar struct {
-	user *User
+	user User
 }
 
 // Context returns the context of Avatar.

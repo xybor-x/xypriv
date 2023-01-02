@@ -29,29 +29,44 @@ import (
 	"github.com/xybor-x/xypriv"
 )
 
+func init() {
+	xypriv.AddRelation(nil, "banned", xypriv.BadRelation)
+	xypriv.AddRelation(nil, "friend", xypriv.LowFamiliar)
+	xypriv.AddRelation(nil, "groupMember", xypriv.LowFamiliar)
+	xypriv.AddRelation(nil, "groupAdmin", xypriv.LocalAdmin)
+	xypriv.AddRelation(nil, "groupBanned", xypriv.BadRelation)
+	xypriv.AddRelation(Group{}, "banned", xypriv.BadRelation)
+	xypriv.AddRelation(Group{}, "anyone", xypriv.Anyone)
+	xypriv.AddRelation(Group{}, "sameGroup", xypriv.LowFamiliar)
+	xypriv.AddRelation(Group{}, "moderator", xypriv.Moderator)
+	xypriv.AddRelation(Group{}, "groupAdmin", xypriv.LocalAdmin)
+	xypriv.AddRelation(Group{}, "admin", xypriv.Admin)
+	xypriv.AddRelation(Group{}, "self", xypriv.Self)
+}
+
 func Example() {
-	var self = &User{id: "self"}
-	var admin = &User{id: "admin", role: "admin"}
-	var gAdmin = &User{id: "gAdmin"}
-	var sameGroup = &User{id: "sameGroup"}
-	var bannedButSameGroup = &User{id: "bannedButSameGroup"}
-	var friendButNotSameGroup = &User{id: "friendButNotSameGroup"}
-	var userBannedByGroup = &User{id: "userBannedByGroup"}
+	var self = User{id: "self"}
+	var admin = User{id: "admin", role: "admin"}
+	var gAdmin = User{id: "gAdmin"}
+	var sameGroup = User{id: "sameGroup"}
+	var bannedButSameGroup = User{id: "bannedButSameGroup"}
+	var friendButNotSameGroup = User{id: "friendButNotSameGroup"}
+	var userBannedByGroup = User{id: "userBannedByGroup"}
 
 	self.bannedUser = append(self.bannedUser, bannedButSameGroup)
 	self.friends = append(self.friends, friendButNotSameGroup)
 
-	var groupX = &Group{
-		members:    []*User{self, gAdmin, sameGroup, bannedButSameGroup},
+	var groupX = Group{
+		members:    []User{self, gAdmin, sameGroup, bannedButSameGroup},
 		admin:      gAdmin,
-		bannedUser: []*User{userBannedByGroup},
+		bannedUser: []User{userBannedByGroup},
 	}
 
 	var avt = Avatar{user: self}
 	var groupAvt = GroupAvatar{group: groupX}
 	var post = GroupPost{group: groupX, user: self}
 
-	var users = []*User{
+	var users = []User{
 		self,
 		admin,
 		gAdmin,

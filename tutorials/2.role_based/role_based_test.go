@@ -35,26 +35,26 @@ type User struct {
 }
 
 // Relation returns the privilege of user over another subject.
-func (u User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
+func (u User) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	// Context-independent privilege should come first.
 	switch u.role {
 	case "admin":
-		return xypriv.Admin
+		return "admin"
 	case "mod":
-		return xypriv.Moderator
+		return "moderator"
 	}
 
 	switch t := subject.(type) {
 	case User:
 		if t.id == u.id {
-			return xypriv.Self
+			return "self"
 		}
 	}
 
-	return xypriv.Anyone
+	return "anyone"
 }
 
-// Avatar implements Resource interface.
+// Avatar implements StaticResource interface.
 type Avatar struct {
 	user User
 }

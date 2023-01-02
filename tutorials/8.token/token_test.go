@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package context_test
+package token_test
 
 import (
 	"fmt"
@@ -29,6 +29,7 @@ import (
 )
 
 func init() {
+	xypriv.AddRelation(nil, "banned", xypriv.BadRelation)
 	xypriv.AddRelation(nil, "groupMember", xypriv.LowFamiliar)
 	xypriv.AddRelation(Group{}, "anyone", xypriv.Anyone)
 	xypriv.AddRelation(Group{}, "sameGroup", xypriv.LowFamiliar)
@@ -139,41 +140,58 @@ func (gp GroupPost) Permission(action ...string) xypriv.AccessLevel {
 }
 
 func Example() {
-	var userA = User{id: "A"}
-	var userB = User{id: "B"}
-	var userC = User{id: "C"}
-	var group = Group{member: []User{userA, userB}}
-	var post = GroupPost{user: userA, group: group}
+	var user = User{id: "user"}
 
-	if xypriv.Check(userA).Perform("update").On(post) == nil {
-		fmt.Println("userA can update the group post")
+	var tokenReadPost = xypriv.NewToken()
+	tokenReadPost.AllowActionInScope(GroupPost{}, "read")
+
+	var tokenGroup = xypriv.NewToken()
+	tokenGroup.AllowScope(Group{})
+
+	var tokenNoPriv = xypriv.NewToken()
+
+	var group = Group{member: []User{user}}
+	var post = GroupPost{user: user, group: group}
+
+	if xypriv.Check(user).Perform("update").On(post) == nil {
+		fmt.Println("user can update the group post")
 	}
 
-	if xypriv.Check(userB).Perform("update").On(post) != nil {
-		fmt.Println("userB can't update the group post")
+	if xypriv.Check(user).Delegate(tokenReadPost).Perform("update").On(post) != nil {
+		fmt.Println("tokenReadPost can't update the group post")
 	}
 
-	if xypriv.Check(userC).Perform("update").On(post) != nil {
-		fmt.Println("userC can't update the group post")
+	if xypriv.Check(user).Delegate(tokenGroup).Perform("update").On(post) == nil {
+		fmt.Println("tokenGroup can update the group post")
 	}
 
-	if xypriv.Check(userA).Perform("read").On(post) == nil {
-		fmt.Println("userA can read the group post")
+	if xypriv.Check(user).Delegate(tokenNoPriv).Perform("update").On(post) != nil {
+		fmt.Println("tokenNoPriv can't update the group post")
 	}
 
-	if xypriv.Check(userB).Perform("read").On(post) == nil {
-		fmt.Println("userB can read the group post")
+	if xypriv.Check(user).Perform("read").On(post) == nil {
+		fmt.Println("user can read the group post")
 	}
 
-	if xypriv.Check(userC).Perform("read").On(post) != nil {
-		fmt.Println("userC can't read the group post")
+	if xypriv.Check(user).Delegate(tokenReadPost).Perform("read").On(post) == nil {
+		fmt.Println("tokenReadPost can read the group post")
+	}
+
+	if xypriv.Check(user).Delegate(tokenGroup).Perform("read").On(post) == nil {
+		fmt.Println("tokenGroup can read the group post")
+	}
+
+	if xypriv.Check(user).Delegate(tokenNoPriv).Perform("read").On(post) != nil {
+		fmt.Println("tokenNoPriv can't read the group post")
 	}
 
 	// Output:
-	// userA can update the group post
-	// userB can't update the group post
-	// userC can't update the group post
-	// userA can read the group post
-	// userB can read the group post
-	// userC can't read the group post
+	// user can update the group post
+	// tokenReadPost can't update the group post
+	// tokenGroup can update the group post
+	// tokenNoPriv can't update the group post
+	// user can read the group post
+	// tokenReadPost can read the group post
+	// tokenGroup can read the group post
+	// tokenNoPriv can't read the group post
 }

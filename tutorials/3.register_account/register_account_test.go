@@ -36,33 +36,33 @@ type User struct {
 
 // Relation returns the privilege of user over another subject. See the 2nd
 // tutorial for further details.
-func (u User) Relation(subject xypriv.Subject, ctx any) xypriv.Privilege {
+func (u User) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	switch u.role {
 	case "admin":
-		return xypriv.Admin
+		return "admin"
 	case "mod":
-		return xypriv.Moderator
+		return "moderator"
 	}
 
 	switch t := subject.(type) {
 	case User:
 		if t.id == u.id {
-			return xypriv.Self
+			return "self"
 		}
 	}
 
-	return xypriv.Anyone
+	return "anyone"
 }
 
-// AccountTable implements Resource interface.
+// AccountTable implements StaticResource interface.
 type AccountTable struct{}
 
-// Context returns the context of Avatar.
+// Context returns the context of AccountTable.
 func (a AccountTable) Context() any {
 	return nil
 }
 
-// Owner returns the owner of Avatar.
+// Owner returns the owner of AccountTable.
 func (a AccountTable) Owner() xypriv.Subject {
 	return nil
 }
