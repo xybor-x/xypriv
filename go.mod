@@ -2,7 +2,7 @@ module github.com/xybor-x/xypriv
 
 go 1.18
 
-require github.com/xybor-x/xyerror v1.0.0
+require github.com/xybor-x/xyerror v1.0.5
 
 require (
 	github.com/xybor-x/xycond v1.0.0 // indirect
