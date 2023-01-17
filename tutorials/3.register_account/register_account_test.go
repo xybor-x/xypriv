@@ -54,74 +54,33 @@ func (u User) Relation(ctx any, subject xypriv.Subject) xypriv.Relation {
 	return "anyone"
 }
 
-// AccountTable implements StaticResource interface.
-type AccountTable struct{}
-
-// Context returns the context of AccountTable.
-func (a AccountTable) Context() any {
-	return nil
-}
-
-// Owner returns the owner of AccountTable.
-func (a AccountTable) Owner() xypriv.Subject {
-	return nil
-}
-
-// Permission returns the permission set of AccountTable.
-func (a AccountTable) Permission(action ...string) xypriv.AccessLevel {
-	// Return NotSupport if action is invalid.
-	if len(action) != 2 {
-		return xypriv.NotSupport
-	}
-
-	// If the action contains many strings, it is called parameterized action.
-	// The access level for creating a record in AccountTable is different, it
-	// depends on which role of the created account.
-	// For the usage of parameterized action, see Example func.
-	switch action[0] {
-	case "create":
-		switch action[1] {
-		case "admin":
-			// For the role of admin, the access level is HighSecret, only Admin
-			// privilege can create this role.
-			return xypriv.HighSecret
-		case "mod":
-			// For role of mod, the access level is HighConfidential, both Admin
-			// and Moderator privilege can create this role.
-			return xypriv.HighConfidential
-		case "user":
-			// For role of normal user, the access level is Public, it means
-			// anyone can create this role.
-			return xypriv.Public
-		}
-	}
-
-	return xypriv.NotSupport
-}
-
 func Example() {
 	var userAdmin = User{id: "Admin", role: "admin"}
 	var userModerator = User{id: "Mod", role: "mod"}
 	var user = User{id: "User"}
-	var account = AccountTable{}
 
-	if xypriv.Check(userAdmin).Perform("create", "admin").On(account) == nil {
+	var accountTable = xypriv.AbstractResource("account_table")
+	accountTable.SetPermission(xypriv.HighSecret, "create", "admin")
+	accountTable.SetPermission(xypriv.HighConfidential, "create", "mod")
+	accountTable.SetPermission(xypriv.Public, "create", "user")
+
+	if xypriv.Check(userAdmin).Perform("create", "admin").On(accountTable) == nil {
 		fmt.Println("admin can create admin account")
 	}
 
-	if xypriv.Check(userModerator).Perform("create", "mod").On(account) == nil {
+	if xypriv.Check(userModerator).Perform("create", "mod").On(accountTable) == nil {
 		fmt.Println("mod can't create mod account")
 	}
 
-	if xypriv.Check(userModerator).Perform("create", "admin").On(account) != nil {
+	if xypriv.Check(userModerator).Perform("create", "admin").On(accountTable) != nil {
 		fmt.Println("mod can't create admin account")
 	}
 
-	if xypriv.Check(user).Perform("create", "mod").On(account) != nil {
+	if xypriv.Check(user).Perform("create", "mod").On(accountTable) != nil {
 		fmt.Println("user can't create mod account")
 	}
 
-	if xypriv.Check(nil).Perform("create", "user").On(account) == nil {
+	if xypriv.Check(nil).Perform("create", "user").On(accountTable) == nil {
 		fmt.Println("anyone can create user account")
 	}
 
