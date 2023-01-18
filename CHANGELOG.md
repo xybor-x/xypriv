@@ -2,3 +2,4 @@
 -  First version.
 -  Support delegatee.
 -  Support abstract resource.
+-  Fix bugs.

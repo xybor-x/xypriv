@@ -91,7 +91,7 @@ func AddRelation(context any, relation Relation, privilege Privilege) {
 func getPrivilege(context any, relation Relation) Privilege {
 	var cname = getName(context)
 
-	if cmap, ok := relationMap[cname]; ok || cname == "" {
+	if cmap, ok := relationMap[cname]; ok || cname == "nil" {
 		relation = Relation(strings.ToLower(string(relation)))
 		if priv, ok := cmap[relation]; ok {
 			return priv

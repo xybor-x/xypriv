@@ -148,23 +148,27 @@ func (c *Checker) On(resource Resource) error {
 
 // getName returns the name of object.
 func getName(a any) string {
-	if a == nil {
-		return ""
-	}
+	var name = func() string {
+		if a == nil {
+			return "nil"
+		}
 
-	if s, ok := a.(fmt.Stringer); ok {
-		return s.String()
-	}
+		if s, ok := a.(fmt.Stringer); ok {
+			return s.String()
+		}
 
-	var atype = reflect.TypeOf(a)
-	switch atype.Kind() {
-	case reflect.String:
-		return a.(string)
-	case reflect.Struct:
-		return atype.Name()
-	case reflect.Pointer:
-		return atype.Elem().Name()
-	default:
-		panic(XyprivError.New("expected a string, struct, or pointer of struct to get its name"))
-	}
+		var atype = reflect.TypeOf(a)
+		switch atype.Kind() {
+		case reflect.String:
+			return a.(string)
+		case reflect.Struct:
+			return atype.Name()
+		case reflect.Pointer:
+			return atype.Elem().Name()
+		default:
+			panic(XyprivError.New("expected a string, struct, or pointer of struct to get its name"))
+		}
+	}()
+
+	return strings.ReplaceAll(name, ".", "_")
 }

@@ -148,7 +148,8 @@ func Example() {
 	var tokenGroup = xypriv.NewToken()
 	tokenGroup.AllowScope(Group{})
 
-	var tokenNoPriv = xypriv.NewToken()
+	var tokenNormalContext = xypriv.NewToken()
+	tokenNormalContext.AllowScope(nil)
 
 	var group = Group{member: []User{user}}
 	var post = GroupPost{user: user, group: group}
@@ -165,8 +166,8 @@ func Example() {
 		fmt.Println("tokenGroup can update the group post")
 	}
 
-	if xypriv.Check(user).Delegate(tokenNoPriv).Perform("update").On(post) != nil {
-		fmt.Println("tokenNoPriv can't update the group post")
+	if xypriv.Check(user).Delegate(tokenNormalContext).Perform("update").On(post) != nil {
+		fmt.Println("tokenNormalContext can't update the group post")
 	}
 
 	if xypriv.Check(user).Perform("read").On(post) == nil {
@@ -181,17 +182,17 @@ func Example() {
 		fmt.Println("tokenGroup can read the group post")
 	}
 
-	if xypriv.Check(user).Delegate(tokenNoPriv).Perform("read").On(post) != nil {
-		fmt.Println("tokenNoPriv can't read the group post")
+	if xypriv.Check(user).Delegate(tokenNormalContext).Perform("read").On(post) != nil {
+		fmt.Println("tokenNormalContext can't read the group post")
 	}
 
 	// Output:
 	// user can update the group post
 	// tokenReadPost can't update the group post
 	// tokenGroup can update the group post
-	// tokenNoPriv can't update the group post
+	// tokenNormalContext can't update the group post
 	// user can read the group post
 	// tokenReadPost can read the group post
 	// tokenGroup can read the group post
-	// tokenNoPriv can't read the group post
+	// tokenNormalContext can't read the group post
 }

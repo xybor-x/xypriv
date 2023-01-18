@@ -127,8 +127,9 @@ func (t LeastPrivilegeToken) Delegate(relation Relation, resource Resource, acti
 
 // setRule adds the condition tuple of relation, scope, and action into token
 // rules. The scope could be context or resource. Use the empty relation to
-// apply all relations in the condition. Use the nil scope to apply all scopes
-// in the condition. Use no action to apply all actions in the condition.
+// apply all relations in the condition. Use the empty string as scope to apply
+// all scopes in the condition. Use no action to apply all actions in the
+// condition.
 func (t *LeastPrivilegeToken) setRule(relation Relation, scope any, action []string, result bool) {
 	var relName = string(relation)
 	var scopeName = getName(scope)
